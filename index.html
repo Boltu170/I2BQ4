@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Financial Analysis Quiz - 15 MCQs</title>
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@700;900&family=Source+Sans+Pro:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Source Sans Pro', sans-serif; background: linear-gradient(135deg, #1a0033 0%, #2d1b4e 50%, #1a0033 100%); color: #fff; min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 20px; }
+        .quiz-container { background: rgba(255,255,255,0.1); backdrop-filter: blur(15px); border-radius: 20px; padding: 50px; max-width: 800px; width: 100%; box-shadow: 0 20px 60px rgba(0,0,0,0.5); border: 2px solid rgba(255,215,0,0.3); }
+        .quiz-header { text-align: center; margin-bottom: 40px; }
+        .quiz-header h1 { font-family: 'Merriweather', serif; font-size: 2.5em; color: #ffd700; margin-bottom: 15px; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
+        .progress-bar { background: rgba(0,0,0,0.3); height: 10px; border-radius: 10px; overflow: hidden; margin: 20px 0; }
+        .progress-fill { background: linear-gradient(90deg, #ffd700, #ffed4e); height: 100%; width: 0%; transition: width 0.3s ease; }
+        .question-number { font-size: 1.1em; color: #ffd700; margin-bottom: 10px; font-weight: 600; }
+        .question-text { font-size: 1.3em; margin-bottom: 30px; line-height: 1.6; color: #fff; }
+        .options { display: flex; flex-direction: column; gap: 15px; }
+        .option { background: rgba(255,255,255,0.1); padding: 18px 25px; border-radius: 12px; cursor: pointer; transition: all 0.3s ease; border: 2px solid transparent; font-size: 1.1em; position: relative; }
+        .option:hover:not(.disabled) { background: rgba(255,255,255,0.2); border-color: #ffd700; transform: translateX(10px); }
+        .option.selected { background: rgba(255,215,0,0.3); border-color: #ffd700; }
+        .option.correct { background: rgba(0,255,136,0.3); border-color: #00ff88; }
+        .option.wrong { background: rgba(255,0,68,0.3); border-color: #ff0044; }
+        .option.disabled { cursor: not-allowed; opacity: 0.6; }
+        .feedback { margin-top: 25px; padding: 20px; border-radius: 12px; display: none; animation: slideIn 0.4s ease; }
+        .feedback.show { display: block; }
+        .feedback.correct-feedback { background: rgba(0,255,136,0.2); border-left: 4px solid #00ff88; }
+        .feedback.wrong-feedback { background: rgba(255,0,68,0.2); border-left: 4px solid #ff0044; }
+        .feedback-title { font-size: 1.2em; font-weight: 700; margin-bottom: 10px; }
+        .feedback.correct-feedback .feedback-title { color: #00ff88; }
+        .feedback.wrong-feedback .feedback-title { color: #ff0044; }
+        .attempts-left { margin-top: 15px; font-size: 1em; color: #ffd700; font-weight: 600; }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        .btn { background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%); color: #1a0033; border: none; padding: 15px 40px; font-size: 1.1em; font-weight: 700; border-radius: 30px; cursor: pointer; transition: all 0.3s ease; margin-top: 30px; box-shadow: 0 4px 15px rgba(255,215,0,0.4); display: none; }
+        .btn.show { display: inline-block; }
+        .btn:hover:not(:disabled) { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(255,215,0,0.6); }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .score-display { text-align: center; font-size: 1.2em; margin-top: 20px; color: #ffd700; }
+        .results-container { text-align: center; }
+        .results-container h2 { font-family: 'Merriweather', serif; font-size: 2.5em; color: #ffd700; margin-bottom: 30px; }
+        .final-score { font-size: 3em; color: #00ff88; margin: 30px 0; font-weight: 700; }
+        .score-breakdown { background: rgba(255,255,255,0.1); padding: 25px; border-radius: 15px; margin: 20px 0; text-align: left; }
+        .score-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.2); font-size: 1.1em; }
+        .score-item:last-child { border-bottom: none; }
+        .restart-btn { margin-top: 30px; }
+        @media (max-width: 768px) { .quiz-container { padding: 30px 25px; } .quiz-header h1 { font-size: 2em; } .question-text { font-size: 1.15em; } }
+    </style>
+</head>
+<body>
+    <div class="quiz-container">
+        <div class="quiz-header">
+            <h1>📊 Financial Analysis Quiz</h1>
+            <p style="color: #e8e8e8; font-size: 1.1em; margin-top: 10px;">15 Multiple Choice Questions | 2 Attempts Per Question</p>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressBar"></div>
+            </div>
+            <div class="score-display">
+                Score: <span id="currentScore">0</span> / <span id="totalScore">15</span>
+            </div>
+        </div>
+
+```
+    <div id="quizContent">
+        <!-- Questions will be inserted here dynamically -->
+    </div>
+
+    <div id="resultsContainer" style="display: none;">
+        <div class="results-container">
+            <h2>🎉 Quiz Complete!</h2>
+            <div class="final-score" id="finalScore"></div>
+            <div class="score-breakdown">
+                <div class="score-item">
+                    <span>Total Questions:</span>
+                    <span>15</span>
+                </div>
+                <div class="score-item">
+                    <span>Correct Answers:</span>
+                    <span id="correctCount">0</span>
+                </div>
+                <div class="score-item">
+                    <span>Wrong Answers:</span>
+                    <span id="wrongCount">0</span>
+                </div>
+                <div class="score-item">
+                    <span>Percentage:</span>
+                    <span id="percentage">0%</span>
+                </div>
+            </div>
+            <button class="btn show restart-btn" onclick="restartQuiz()">🔄 Restart Quiz</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const questions = [{"question": "Which of the following is NOT a characteristic of a well-defined financial objective?", "options": ["Contains a specific numerical target", "Includes a clear timeframe for achievement", "Uses vague language like 'improve' without specifics", "Set by managers responsible for business finance"], "correct": 2, "explanation": "Well-defined financial objectives must be SMART (Specific, Measurable, Achievable, Relevant, Time-bound). Using vague language like 'improve' without specifics makes it poorly defined. For example, saying 'improve profit' is vague, whereas 'increase profit by 15% within 12 months' is specific and measurable."}, {"question": "A small tech startup is running low on cash despite strong sales growth. Which financial objective should they prioritize?", "options": ["Profit maximization", "Financial safety (cash flow management)", "Capital spending objectives", "Return on investment"], "correct": 1, "explanation": "Financial safety through cash flow management should be the priority. Fast-growing companies often face a 'growth paradox' where increasing sales require upfront investment before revenue is collected. This creates cash flow gaps that can threaten the business's survival, even when sales are strong. Many profitable businesses have failed due to poor cash flow management."}, {"question": "A restaurant chain pays \u00a350,000/month in rent for 5 locations and \u00a32 per meal in ingredient costs. They're considering closing 2 underperforming locations. What type of cost reduction is this?", "options": ["Variable cost reduction", "Fixed cost reduction", "Mixed cost reduction", "Marginal cost reduction"], "correct": 1, "explanation": "This is fixed cost reduction. Closing locations primarily reduces fixed costs like rent, which must be paid regardless of how many meals are served. The rent expense doesn't change based on customer volume\u2014it's a fixed monthly obligation. While closing locations will also reduce some variable costs (fewer ingredients purchased), the strategic decision to close branches is fundamentally about eliminating fixed cost burdens."}, {"question": "What is the correct formula for calculating profit?", "options": ["Profit = Revenue + Total Costs", "Profit = Revenue - Total Costs", "Profit = Revenue \u00d7 Total Costs", "Profit = Total Costs - Revenue"], "correct": 1, "explanation": "Profit = Revenue - Total Costs. Profit is the financial gain achieved when total sales revenue exceeds total costs during a trading period. For example, if a business generates \u00a3100,000 in revenue and incurs \u00a370,000 in total costs, the profit is \u00a3100,000 - \u00a370,000 = \u00a330,000."}, {"question": "A bakery has monthly sales revenue of \u00a345,000, ingredient costs of \u00a312,000, staff wages of \u00a318,000, and rent & utilities of \u00a38,000. What is the monthly profit?", "options": ["\u00a35,000", "\u00a37,000", "\u00a39,000", "\u00a327,000"], "correct": 1, "explanation": "Total Costs = \u00a312,000 + \u00a318,000 + \u00a38,000 = \u00a338,000. Profit = Revenue - Total Costs = \u00a345,000 - \u00a338,000 = \u00a37,000. This represents a profit margin of 15.6%, which is healthy for the food service industry."}, {"question": "Which of the following is an example of a fixed cost?", "options": ["Raw materials purchased for production", "Monthly rent for business premises", "Hourly wages for production workers", "Packaging costs per unit"], "correct": 1, "explanation": "Monthly rent is a fixed cost because it does not vary with the level of production or sales volume. It must be paid regardless of whether the business produces 0 units or 10,000 units. Raw materials, hourly wages for production workers, and packaging costs are all variable costs that change with production levels."}, {"question": "A restaurant temporarily closes for a month for renovations. Monthly expenses are: Rent \u00a35,000, Manager's salary \u00a33,500, Insurance \u00a3500, Chef's hourly wages \u00a34,000, Food ingredients \u00a36,000. Which costs must still be paid during closure?", "options": ["Only rent (\u00a35,000)", "Rent, manager's salary, and insurance (\u00a39,000)", "All costs except food ingredients (\u00a313,000)", "All costs must be paid (\u00a319,000)"], "correct": 1, "explanation": "During closure, only true fixed costs must be paid: Rent \u00a35,000 (lease obligation continues), Manager's salary \u00a33,500 (typically a salaried position), and Insurance \u00a3500 (policy remains active) = \u00a39,000 total. Chef's hourly wages and food ingredients are variable costs that are zero when the restaurant is closed and not operating."}, {"question": "Which of the following best describes variable costs?", "options": ["Costs that remain constant regardless of production levels", "Costs that change in direct proportion to production levels", "Costs that are paid annually", "Costs that cannot be controlled by management"], "correct": 1, "explanation": "Variable costs are expenses that change in direct proportion to the level of production or sales. If you double production, variable costs double. If you produce nothing, variable costs are zero. Examples include raw materials, direct labor, packaging, and shipping costs."}, {"question": "What is the correct formula for calculating revenue?", "options": ["Revenue = Fixed Costs + Variable Costs", "Revenue = Profit - Total Costs", "Revenue = Volume of Units Sold \u00d7 Average Selling Price", "Revenue = Total Costs - Profit"], "correct": 2, "explanation": "Revenue = Volume of Units Sold \u00d7 Average Selling Price. This formula is fundamental to financial planning. For example, if you sell 100 cupcakes at \u00a33 each, your revenue is 100 \u00d7 \u00a33 = \u00a3300. Revenue represents the total income generated before any costs are deducted."}, {"question": "A coffee shop sells 150 lattes at \u00a33.50 each, 200 cappuccinos at \u00a33.20 each, and 80 pastries at \u00a32.50 each. What is the total daily revenue?", "options": ["\u00a31,165", "\u00a31,265", "\u00a31,365", "\u00a31,465"], "correct": 2, "explanation": "Latte revenue: 150 \u00d7 \u00a33.50 = \u00a3525. Cappuccino revenue: 200 \u00d7 \u00a33.20 = \u00a3640. Pastry revenue: 80 \u00d7 \u00a32.50 = \u00a3200. Total revenue = \u00a3525 + \u00a3640 + \u00a3200 = \u00a31,365."}, {"question": "Jason's burger van has fixed costs of \u00a3165, variable costs of \u00a31.00 per burger, and sells burgers for \u00a32.00 each. How many burgers must Jason sell to break even?", "options": ["83 burgers", "110 burgers", "165 burgers", "330 burgers"], "correct": 2, "explanation": "Contribution per unit = Selling price - Variable cost = \u00a32.00 - \u00a31.00 = \u00a31.00. Break-even output = Fixed costs \u00f7 Contribution per unit = \u00a3165 \u00f7 \u00a31.00 = 165 burgers. Jason needs to sell exactly 165 burgers to cover all his costs."}, {"question": "What is the correct break-even formula?", "options": ["Break-even = Fixed Costs \u00d7 (Selling Price - Variable Cost)", "Break-even = Fixed Costs \u00f7 (Selling Price - Variable Cost)", "Break-even = (Fixed Costs + Variable Costs) \u00f7 Selling Price", "Break-even = Selling Price \u00f7 (Fixed Costs + Variable Cost)"], "correct": 1, "explanation": "Break-even Output = Fixed Costs \u00f7 (Selling Price per Unit - Variable Cost per Unit). The denominator (Selling Price - Variable Cost) is called the contribution per unit, which represents the amount each unit contributes toward covering fixed costs and generating profit."}, {"question": "A candle business has fixed costs of \u00a3800 per month. Each candle costs \u00a33 to make and sells for \u00a312. What is the break-even point in units?", "options": ["67 candles", "89 candles", "100 candles", "267 candles"], "correct": 1, "explanation": "Contribution per unit = \u00a312 - \u00a33 = \u00a39. Break-even = \u00a3800 \u00f7 \u00a39 = 88.89 candles. Since you can't sell a fraction of a candle, you must round up to 89 candles. The business must sell at least 89 candles monthly to cover all costs."}, {"question": "A software company has a break-even point of 500 subscriptions per month and currently has 800 subscriptions. What is their margin of safety as a percentage?", "options": ["37.5%", "40%", "50%", "62.5%"], "correct": 0, "explanation": "Margin of Safety = [(Current Sales - Break-even Sales) \u00f7 Current Sales] \u00d7 100% = [(800 - 500) \u00f7 800] \u00d7 100% = (300 \u00f7 800) \u00d7 100% = 37.5%. This means the company can lose 37.5% of its current subscriptions (300 subscribers) before reaching break-even and starting to lose money."}, {"question": "On a break-even chart, what does it mean when the revenue line is below the total cost line?", "options": ["The business is making a profit", "The business has reached break-even", "The business is making a loss", "Fixed costs are too high"], "correct": 2, "explanation": "When the revenue line is below the total cost line, it means revenue is less than costs, indicating the business is operating at a loss. The vertical distance between the two lines represents the magnitude of the loss. The break-even point occurs where the revenue line intersects (crosses) the total cost line."}];
+    
+    let currentQuestion = 0;
+    let score = 0;
+    let attempts = 0;
+    let answered = false;
+
+    // Shuffle array function
+    function shuffle(array) {
+        const shuffled = [...array];
+        for (let i = shuffled.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+        }
+        return shuffled;
+    }
+
+    // Randomize options for all questions
+    questions.forEach(q => {
+        const correctAnswer = q.options[q.correct];
+        q.options = shuffle(q.options);
+        q.correct = q.options.indexOf(correctAnswer);
+    });
+
+    function loadQuestion() {
+        if (currentQuestion >= questions.length) {
+            showResults();
+            return;
+        }
+
+        const q = questions[currentQuestion];
+        attempts = 0;
+        answered = false;
+
+        const html = `
+            <div class="question-number">Question ${currentQuestion + 1} of ${questions.length}</div>
+            <div class="question-text">${q.question}</div>
+            <div class="options" id="options">
+                ${q.options.map((opt, idx) => `
+                    <div class="option" onclick="selectAnswer(${idx})" data-index="${idx}">
+                        ${String.fromCharCode(65 + idx)}) ${opt}
+                    </div>
+                `).join('')}
+            </div>
+            <div id="feedback" class="feedback"></div>
+            <div id="attemptsLeft" class="attempts-left" style="display: none;"></div>
+            <button id="nextBtn" class="btn" onclick="nextQuestion()">Next Question →</button>
+        `;
+
+        document.getElementById('quizContent').innerHTML = html;
+        updateProgress();
+    }
+
+    function selectAnswer(selectedIdx) {
+        if (answered) return;
+
+        const q = questions[currentQuestion];
+        attempts++;
+
+        // Remove previous selections
+        document.querySelectorAll('.option').forEach(opt => {
+            opt.classList.remove('selected');
+        });
+
+        // Mark selected
+        const selectedOption = document.querySelector(`[data-index="${selectedIdx}"]`);
+        selectedOption.classList.add('selected');
+
+        const feedback = document.getElementById('feedback');
+        const attemptsDiv = document.getElementById('attemptsLeft');
+        const nextBtn = document.getElementById('nextBtn');
+
+        if (selectedIdx === q.correct) {
+            // Correct answer
+            selectedOption.classList.remove('selected');
+            selectedOption.classList.add('correct');
+            feedback.className = 'feedback correct-feedback show';
+            feedback.innerHTML = `
+                <div class="feedback-title">✓ Correct!</div>
+                <div>${q.explanation}</div>
+            `;
+            score++;
+            answered = true;
+            nextBtn.classList.add('show');
+            document.querySelectorAll('.option').forEach(opt => opt.classList.add('disabled'));
+            document.getElementById('currentScore').textContent = score;
+        } else {
+            // Wrong answer
+            selectedOption.classList.remove('selected');
+            selectedOption.classList.add('wrong');
+
+            if (attempts >= 2) {
+                // Out of attempts
+                feedback.className = 'feedback wrong-feedback show';
+                feedback.innerHTML = `
+                    <div class="feedback-title">✗ Out of Attempts</div>
+                    <div>The correct answer was: <strong>${String.fromCharCode(65 + q.correct)}) ${q.options[q.correct]}</strong></div>
+                    <div style="margin-top: 15px;">${q.explanation}</div>
+                `;
+                answered = true;
+                nextBtn.classList.add('show');
+                document.querySelectorAll('.option').forEach(opt => opt.classList.add('disabled'));
+                // Highlight correct answer
+                document.querySelector(`[data-index="${q.correct}"]`).classList.add('correct');
+            } else {
+                // Still have attempts left
+                attemptsDiv.style.display = 'block';
+                attemptsDiv.innerHTML = `⚠️ Incorrect! You have ${2 - attempts} attempt(s) remaining.`;
+                feedback.className = 'feedback wrong-feedback show';
+                feedback.innerHTML = `
+                    <div class="feedback-title">✗ Incorrect</div>
+                    <div>Please try again. You have ${2 - attempts} attempt(s) left.</div>
+                `;
+                
+                // Allow another attempt after brief delay
+                setTimeout(() => {
+                    selectedOption.classList.remove('wrong');
+                    feedback.classList.remove('show');
+                }, 1500);
+            }
+        }
+    }
+
+    function nextQuestion() {
+        currentQuestion++;
+        loadQuestion();
+    }
+
+    function updateProgress() {
+        const progress = ((currentQuestion) / questions.length) * 100;
+        document.getElementById('progressBar').style.width = progress + '%';
+    }
+
+    function showResults() {
+        document.getElementById('quizContent').style.display = 'none';
+        document.getElementById('resultsContainer').style.display = 'block';
+        
+        const percentage = Math.round((score / questions.length) * 100);
+        const wrongCount = questions.length - score;
+
+        document.getElementById('finalScore').textContent = score + ' / ' + questions.length;
+        document.getElementById('correctCount').textContent = score;
+        document.getElementById('wrongCount').textContent = wrongCount;
+        document.getElementById('percentage').textContent = percentage + '%';
+
+        // Update progress bar to full
+        document.getElementById('progressBar').style.width = '100%';
+    }
+
+    function restartQuiz() {
+        currentQuestion = 0;
+        score = 0;
+        
+        // Re-randomize all questions
+        questions.forEach(q => {
+            const correctAnswer = q.options[q.correct];
+            q.options = shuffle(q.options);
+            q.correct = q.options.indexOf(correctAnswer);
+        });
+
+        document.getElementById('currentScore').textContent = '0';
+        document.getElementById('quizContent').style.display = 'block';
+        document.getElementById('resultsContainer').style.display = 'none';
+        loadQuestion();
+    }
+
+    // Initialize quiz
+    loadQuestion();
+</script>
+```
+
+</body>
+</html>
